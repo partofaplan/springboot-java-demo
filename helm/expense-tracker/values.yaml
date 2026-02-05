@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: expense-tracker
+  repository: partofaplan/expense-tracker
   tag: "0.1.0"
   pullPolicy: IfNotPresent
 
