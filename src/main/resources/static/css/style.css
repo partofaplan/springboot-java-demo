@@ -246,7 +246,7 @@ tr:last-child td { border-bottom: none; }
     margin-top: 0.25rem;
 }
 
-.category-badge {
+.envelope-badge {
     display: inline-block;
     padding: 0.125rem 0.5rem;
     border-radius: 9999px;
@@ -254,4 +254,144 @@ tr:last-child td { border-bottom: none; }
     font-weight: 500;
     background: #eef2ff;
     color: var(--primary);
+    text-decoration: none;
+}
+
+/* Summary Row */
+.summary-row {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.summary-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.summary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* Envelope Grid */
+.envelope-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.envelope-card {
+    display: block;
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.envelope-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.envelope-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.envelope-name {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.envelope-amount-display {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+.envelope-meter-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Budget Meter */
+.budget-meter {
+    width: 100%;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.budget-meter-fill {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.budget-meter-fill.warning {
+    background: #f59e0b;
+}
+
+.budget-meter-fill.danger {
+    background: var(--danger);
+}
+
+/* Paycheck Allocation Form */
+.allocation-row {
+    display: grid;
+    grid-template-columns: 1fr 150px;
+    gap: 1rem;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.allocation-row:last-child {
+    border-bottom: none;
+}
+
+.allocation-label {
+    font-weight: 500;
+}
+
+.allocation-input {
+    width: 100%;
+}
+
+.unallocated-display {
+    background: var(--success-bg);
+    color: var(--success-text);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.unallocated-display.warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.unallocated-display.over {
+    background: var(--error-bg);
+    color: var(--error-text);
 }

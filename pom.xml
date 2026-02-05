@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.example</groupId>
-    <artifactId>expense-tracker</artifactId>
+    <artifactId>budget-buddy</artifactId>
     <version>0.1.0</version>
-    <name>expense-tracker</name>
-    <description>Expense Tracker Web Application</description>
+    <name>budget-buddy</name>
+    <description>BudgetBuddy Envelope Budgeting Application</description>
 
     <properties>
         <java.version>17</java.version>

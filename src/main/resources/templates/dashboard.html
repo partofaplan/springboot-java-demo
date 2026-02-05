@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BudgetBuddy</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/dashboard" class="brand">BudgetBuddy</a>
+            <div class="nav-right">
+                <a th:href="@{/envelopes}" class="btn btn-link">Envelopes</a>
+                <a th:href="@{/paychecks}" class="btn btn-link">Paychecks</a>
+                <span class="user-info" sec:authentication="name"></span>
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit" class="btn btn-link">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <!-- Budget Summary -->
+        <div class="card">
+            <div class="summary-row">
+                <div class="summary-item">
+                    <span class="summary-label">Total Budget</span>
+                    <span class="summary-value" th:text="'$' + ${#numbers.formatDecimal(totalBudget, 1, 2)}"></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Remaining</span>
+                    <span class="summary-value" th:text="'$' + ${#numbers.formatDecimal(totalRemaining, 1, 2)}"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Envelopes Grid -->
+        <h2>Your Envelopes</h2>
+        <div th:if="${#lists.isEmpty(envelopes)}" class="card">
+            <div class="empty-state">
+                <p>No envelopes yet. <a th:href="@{/envelopes}">Create your first envelope</a> to start budgeting.</p>
+            </div>
+        </div>
+
+        <div th:unless="${#lists.isEmpty(envelopes)}" class="envelope-grid">
+            <a th:each="env : ${envelopes}" th:href="@{/envelopes/{id}(id=${env.id})}" class="envelope-card">
+                <div class="envelope-header">
+                    <span class="envelope-name" th:text="${env.name}"></span>
+                </div>
+                <div class="envelope-amount-display">
+                    <span th:text="'$' + ${#numbers.formatDecimal(env.currentAmount, 1, 2)}"></span>
+                    remaining of
+                    <span th:text="'$' + ${#numbers.formatDecimal(env.budgetThreshold, 1, 2)}"></span>
+                </div>
+                <div class="budget-meter">
+                    <div class="budget-meter-fill"
+                         th:classappend="${env.percentageUsed > 90 ? 'danger' : (env.percentageUsed > 75 ? 'warning' : '')}"
+                         th:style="'width:' + ${T(Math).min(env.percentageUsed, 100)} + '%'"></div>
+                </div>
+                <div class="envelope-meter-label">
+                    <span th:text="${#numbers.formatDecimal(env.percentageUsed, 1, 0)} + '% spent'"></span>
+                </div>
+            </a>
+        </div>
+
+        <!-- Recent Expenses -->
+        <div class="card" style="margin-top: 1.5rem;">
+            <h2>All Expenses</h2>
+
+            <div th:if="${#lists.isEmpty(expenses)}" class="empty-state">
+                <p>No expenses recorded yet.</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(expenses)}">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Envelope</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="exp : ${expenses}">
+                                <td th:text="${exp.date}"></td>
+                                <td th:text="${exp.description}"></td>
+                                <td>
+                                    <a th:href="@{/envelopes/{id}(id=${exp.envelope.id})}" class="envelope-badge" th:text="${exp.envelope.name}"></a>
+                                </td>
+                                <td class="amount" th:text="'$' + ${#numbers.formatDecimal(exp.amount, 1, 2)}"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Paycheck - BudgetBuddy</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/dashboard" class="brand">BudgetBuddy</a>
+            <div class="nav-right">
+                <a th:href="@{/envelopes}" class="btn btn-link">Envelopes</a>
+                <a th:href="@{/paychecks}" class="btn btn-link">Paychecks</a>
+                <span class="user-info" sec:authentication="name"></span>
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit" class="btn btn-link">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <h1>Add Paycheck</h1>
+
+        <form th:action="@{/paychecks}" th:object="${paycheckForm}" method="post" id="paycheckForm">
+            <!-- Paycheck Details -->
+            <div class="card">
+                <h2>Paycheck Details</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" id="description" th:field="*{description}" placeholder="e.g. Bi-weekly salary">
+                        <div th:if="${#fields.hasErrors('description')}" class="field-error" th:errors="*{description}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Total Amount</label>
+                        <input type="number" id="paycheckAmount" th:field="*{amount}" step="0.01" min="0.01" placeholder="0.00">
+                        <div th:if="${#fields.hasErrors('amount')}" class="field-error" th:errors="*{amount}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" th:field="*{date}">
+                        <div th:if="${#fields.hasErrors('date')}" class="field-error" th:errors="*{date}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Envelope Allocations -->
+            <div class="card">
+                <h2>Allocate to Envelopes</h2>
+                <p class="text-muted" style="margin-bottom: 1rem; font-size: 0.875rem; color: var(--text-muted);">
+                    Distribute your paycheck across your envelopes. You don't have to allocate the full amount.
+                </p>
+
+                <div id="unallocatedDisplay" class="unallocated-display">
+                    Unallocated: $<span id="unallocatedAmount">0.00</span>
+                </div>
+
+                <div th:if="${#lists.isEmpty(paycheckForm.allocations)}" class="empty-state">
+                    <p>No envelopes created yet. <a th:href="@{/envelopes}">Create envelopes</a> first.</p>
+                </div>
+
+                <div th:unless="${#lists.isEmpty(paycheckForm.allocations)}">
+                    <div th:each="alloc, iter : ${paycheckForm.allocations}" class="allocation-row">
+                        <input type="hidden" th:field="*{allocations[__${iter.index}__].envelopeId}">
+                        <input type="hidden" th:field="*{allocations[__${iter.index}__].envelopeName}">
+                        <span class="allocation-label" th:text="${alloc.envelopeName}"></span>
+                        <input type="number"
+                               th:field="*{allocations[__${iter.index}__].amount}"
+                               class="allocation-input"
+                               step="0.01" min="0" placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Add Paycheck</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const paycheckAmountInput = document.getElementById('paycheckAmount');
+            const allocationInputs = document.querySelectorAll('.allocation-input');
+            const unallocatedSpan = document.getElementById('unallocatedAmount');
+            const unallocatedDisplay = document.getElementById('unallocatedDisplay');
+
+            function updateUnallocated() {
+                const total = parseFloat(paycheckAmountInput.value) || 0;
+                let allocated = 0;
+                allocationInputs.forEach(function(input) {
+                    allocated += parseFloat(input.value) || 0;
+                });
+                const remaining = total - allocated;
+                unallocatedSpan.textContent = remaining.toFixed(2);
+
+                unallocatedDisplay.classList.remove('warning', 'over');
+                if (remaining < 0) {
+                    unallocatedDisplay.classList.add('over');
+                } else if (remaining > 0 && total > 0) {
+                    unallocatedDisplay.classList.add('warning');
+                }
+            }
+
+            paycheckAmountInput.addEventListener('input', updateUnallocated);
+            allocationInputs.forEach(function(input) {
+                input.addEventListener('input', updateUnallocated);
+            });
+
+            updateUnallocated();
+        });
+    </script>
+</body>
+</html>

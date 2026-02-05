@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paychecks - BudgetBuddy</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/dashboard" class="brand">BudgetBuddy</a>
+            <div class="nav-right">
+                <a th:href="@{/envelopes}" class="btn btn-link">Envelopes</a>
+                <a th:href="@{/paychecks}" class="btn btn-link">Paychecks</a>
+                <span class="user-info" sec:authentication="name"></span>
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit" class="btn btn-link">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h1>Paychecks</h1>
+            <a th:href="@{/paychecks/new}" class="btn btn-primary">Add Paycheck</a>
+        </div>
+
+        <div class="card">
+            <div th:if="${#lists.isEmpty(paychecks)}" class="empty-state">
+                <p>No paychecks recorded yet. <a th:href="@{/paychecks/new}">Add your first paycheck</a> to fund your envelopes.</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(paychecks)}">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="pc : ${paychecks}">
+                                <td th:text="${pc.date}"></td>
+                                <td th:text="${pc.description}"></td>
+                                <td class="amount" th:text="'$' + ${#numbers.formatDecimal(pc.amount, 1, 2)}"></td>
+                                <td>
+                                    <form th:action="@{/paychecks/{id}/delete(id=${pc.id})}" method="post" style="display:inline">
+                                        <button type="submit" class="btn btn-danger"
+                                                onclick="return confirm('Delete this paycheck? Allocated funds will be reversed from envelopes.')">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

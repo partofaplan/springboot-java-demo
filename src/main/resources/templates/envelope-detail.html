@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${envelope.name} + ' - BudgetBuddy'">Envelope - BudgetBuddy</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="/dashboard" class="brand">BudgetBuddy</a>
+            <div class="nav-right">
+                <a th:href="@{/envelopes}" class="btn btn-link">Envelopes</a>
+                <a th:href="@{/paychecks}" class="btn btn-link">Paychecks</a>
+                <span class="user-info" sec:authentication="name"></span>
+                <form th:action="@{/logout}" method="post" style="display:inline">
+                    <button type="submit" class="btn btn-link">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <!-- Envelope Summary -->
+        <div class="card">
+            <h1 th:text="${envelope.name}"></h1>
+            <div class="summary-row">
+                <div class="summary-item">
+                    <span class="summary-label">Budget</span>
+                    <span class="summary-value" th:text="'$' + ${#numbers.formatDecimal(envelope.budgetThreshold, 1, 2)}"></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Remaining</span>
+                    <span class="summary-value" th:text="'$' + ${#numbers.formatDecimal(envelope.currentAmount, 1, 2)}"></span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Spent</span>
+                    <span class="summary-value" th:text="'$' + ${#numbers.formatDecimal(totalSpent, 1, 2)}"></span>
+                </div>
+            </div>
+            <div class="budget-meter" style="margin-top: 1rem; height: 12px;">
+                <div class="budget-meter-fill"
+                     th:classappend="${envelope.percentageUsed > 90 ? 'danger' : (envelope.percentageUsed > 75 ? 'warning' : '')}"
+                     th:style="'width:' + ${T(Math).min(envelope.percentageUsed, 100)} + '%'"></div>
+            </div>
+            <div class="envelope-meter-label" style="margin-top: 0.5rem;">
+                <span th:text="${#numbers.formatDecimal(envelope.percentageUsed, 1, 0)} + '% of budget spent'"></span>
+            </div>
+        </div>
+
+        <!-- Add Expense Form -->
+        <div class="card">
+            <h2>Add Expense</h2>
+            <form th:action="@{/envelopes/{id}/add-expense(id=${envelope.id})}" th:object="${expense}" method="post">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <input type="text" id="description" th:field="*{description}" placeholder="What was it for?">
+                        <div th:if="${#fields.hasErrors('description')}" class="field-error" th:errors="*{description}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input type="number" id="amount" th:field="*{amount}" step="0.01" min="0.01" placeholder="0.00">
+                        <div th:if="${#fields.hasErrors('amount')}" class="field-error" th:errors="*{amount}"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" th:field="*{date}">
+                        <div th:if="${#fields.hasErrors('date')}" class="field-error" th:errors="*{date}"></div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Expense</button>
+            </form>
+        </div>
+
+        <!-- Expenses for this Envelope -->
+        <div class="card">
+            <h2>Expenses</h2>
+
+            <div th:if="${#lists.isEmpty(expenses)}" class="empty-state">
+                <p>No expenses in this envelope yet.</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(expenses)}">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="exp : ${expenses}">
+                                <td th:text="${exp.date}"></td>
+                                <td th:text="${exp.description}"></td>
+                                <td class="amount" th:text="'$' + ${#numbers.formatDecimal(exp.amount, 1, 2)}"></td>
+                                <td>
+                                    <form th:action="@{/envelopes/{eid}/expenses/{xid}/delete(eid=${envelope.id}, xid=${exp.id})}" method="post" style="display:inline">
+                                        <button type="submit" class="btn btn-danger"
+                                                onclick="return confirm('Delete this expense?')">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="total-row">
+                    <span>Total Spent</span>
+                    <span th:text="'$' + ${#numbers.formatDecimal(totalSpent, 1, 2)}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

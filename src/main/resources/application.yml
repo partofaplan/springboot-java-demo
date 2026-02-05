@@ -1,10 +1,10 @@
 spring:
   application:
-    name: expense-tracker
+    name: budget-buddy
 
   # Default profile uses H2 in-memory database
   datasource:
-    url: jdbc:h2:mem:expensedb
+    url: jdbc:h2:mem:budgetbuddydb
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -30,10 +30,10 @@ spring:
       on-profile: postgres
 
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/expensedb}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/budgetbuddydb}
     driver-class-name: org.postgresql.Driver
-    username: ${DATABASE_USERNAME:expense}
-    password: ${DATABASE_PASSWORD:expense}
+    username: ${DATABASE_USERNAME:budgetbuddy}
+    password: ${DATABASE_PASSWORD:budgetbuddy}
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect

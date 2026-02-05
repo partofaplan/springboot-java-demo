@@ -1,0 +1,6 @@
+apiVersion: v2
+name: budget-buddy
+description: A Spring Boot envelope budgeting web application
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
