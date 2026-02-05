@@ -11,7 +11,7 @@ service:
   targetPort: 8080
 
 ingress:
-  enabled: false
+  enabled: true
   className: "traefik"
   annotations: {}
   hosts:
@@ -33,16 +33,29 @@ spring:
   profile: postgres
 
 database:
-  url: jdbc:postgresql://expense-tracker-postgresql:5432/expensedb
   username: expense
   password: expense
 
 postgresql:
   enabled: true
+  image:
+    repository: postgres
+    tag: "16-alpine"
+    pullPolicy: IfNotPresent
   auth:
     database: expensedb
     username: expense
     password: expense
+  storage:
+    size: 1Gi
+    storageClassName: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
 
 autoscaling:
   enabled: false
