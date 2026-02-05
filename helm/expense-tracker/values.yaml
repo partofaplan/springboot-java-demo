@@ -1,0 +1,55 @@
+replicaCount: 1
+
+image:
+  repository: expense-tracker
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8080
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: expense-tracker.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+spring:
+  profile: postgres
+
+database:
+  url: jdbc:postgresql://expense-tracker-postgresql:5432/expensedb
+  username: expense
+  password: expense
+
+postgresql:
+  enabled: true
+  auth:
+    database: expensedb
+    username: expense
+    password: expense
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
