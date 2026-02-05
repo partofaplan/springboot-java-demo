@@ -12,7 +12,7 @@ service:
 
 ingress:
   enabled: false
-  className: ""
+  className: "traefik"
   annotations: {}
   hosts:
     - host: expense-tracker.local
